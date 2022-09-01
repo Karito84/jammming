@@ -1,5 +1,5 @@
 const clientId = "5c91c74a19d34338ba53fa27ccdcc754";
-const redirectUri = "http://localhost:3000/";
+const redirectUri = "http://music-all.surge.sh";
 
 let accessToken;
 

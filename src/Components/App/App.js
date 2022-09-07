@@ -21,7 +21,9 @@ class App extends React.Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
   }
-
+  componentDidMount() {
+    Spotify.getAccessToken();
+  }
   updatePlaylistName(name) {
     this.setState({ playlistName: name });
   }
@@ -45,8 +47,8 @@ class App extends React.Component {
     let tracks = this.state.playlistTracks;
     let tracksURIs = tracks.map(currentTrack => currentTrack.uri);
     Spotify.savePlaylist(this.state.playlistName , tracksURIs).then(() => {
-    this.setState( {
-      playlistName: 'New Playlist', 
+    this.setState({
+      playlistName: "New Playlist Name",
       playlistTracks: []
     });
   })  

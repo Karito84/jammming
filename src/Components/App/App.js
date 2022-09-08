@@ -5,6 +5,7 @@ import SearchBar  from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify';
+import PlaylistList from '../PlaylistList/PlaylistList';
 
 class App extends React.Component {
   constructor(props) {
@@ -24,6 +25,7 @@ class App extends React.Component {
   componentDidMount() {
     Spotify.getAccessToken();
   }
+  
   updatePlaylistName(name) {
     this.setState({ playlistName: name });
   }
@@ -73,6 +75,7 @@ class App extends React.Component {
                        onRemove={this.removeTrack}
                        onNameChange={this.updatePlaylistName}
                        onSave={this.savePlaylist}/>
+            <PlaylistList/>
           </div>
         </div>
       </div>)

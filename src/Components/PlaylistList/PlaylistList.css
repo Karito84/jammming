@@ -1,0 +1,26 @@
+
+.PlaylistList {
+  width: 50%;
+  max-height: 950px;
+  overflow-y: scroll;
+  padding: .88rem;
+  background-color: rgba(1, 12, 63, 0.7);
+  box-shadow: 0 4px 2px 2px #000000;
+}
+
+.PlaylistList h3 {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.55rem;
+  color: #fff;
+}
+
+@media only screen and (max-width: 1020px) {
+  .PlaylistList {
+    width: 90%;
+    margin-bottom: 2rem;
+  }
+}

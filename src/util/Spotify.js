@@ -2,6 +2,7 @@ const clientId = "5c91c74a19d34338ba53fa27ccdcc754";
 const redirectUri = "http://localhost:3000/" ;
 
 let accessToken;
+let userId;
 
 const Spotify = {
     getAccessToken() {
@@ -51,56 +52,91 @@ const Spotify = {
         }
                     
     },
+
+    async getCurrentUserId() {
+        if(userId) {
+            return userId;
+        }
+        const accessToken = Spotify.getAccessToken();
+        const headers = {Authorization: `Bearer ${accessToken}`};
+        const url = "https://api.spotify.com/v1/me";
+         try {
+            const response = await fetch(url, {headers: headers});
+            if(response.ok) {
+                const jsonResponse = await response.json();
+                userId = jsonResponse.id;
+                return userId;
+            }
+         } catch (error) {
+            console.log(error)
+         }
+
+    },
       
     async savePlaylist(name, tracksURIs) {
         if((!name || !tracksURIs.length)) {
             return;
         }
         const accessToken = Spotify.getAccessToken();
-        const headers = {Authorization: `Bearer ${accessToken}`};
-        let userId;
+        const headers = { Authorization: `Bearer ${accessToken}` };
+        let currentUserId = await Spotify.getCurrentUserId();
+        const url = `https://api.spotify.com/v1/users/${currentUserId}/playlists`
         try {
-            const response = await fetch("https://api.spotify.com/v1/me", {headers: headers})
+           
+            const response = await fetch(url, {
+                headers: headers,
+                method: 'POST',
+                body: JSON.stringify({ name: name })
+            });
             if(response.ok) {
                 const jsonResponse = await response.json();
-                userId = jsonResponse.id;
-                const url = `https://api.spotify.com/v1/users/${userId}/playlists`
-            
-                try{
+                const playlistID = jsonResponse.id;
+                const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
+
+                try {
                     const response = await fetch(url, {
                     headers: headers,
                     method: 'POST',
-                    body: JSON.stringify({ name: name })
+                    body: JSON.stringify({ uris: tracksURIs})
                     });
+                            
                     if(response.ok) {
                         const jsonResponse = await response.json();
-                        const playlistID = jsonResponse.id;
-                        const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
-
-                        try {
-                            const response = await fetch(url, {
-                                headers: headers,
-                                method: 'POST',
-                                body: JSON.stringify({ uris: tracksURIs})
-                            });
-                            // Commented out as I dont think that I have to do something with this response
-                            //  if(response.ok) {
-                            //      const jsonResponse = await response.json();
-                            //     console.log(jsonResponse);
-                            // }
-                        } catch (error) {
-                            console.log(error);
-                        }
-                    } 
+                        console.log(jsonResponse);
+                    }
+                    } catch (error) {
+                    console.log(error);
+                    }
+            } 
             
-                } catch(error) {
-                console.log(error);
-                }
-            }  
         } catch(error) {
             console.log(error);
         }
-    } 
+    },
+
+    async getUserPlaylist() {
+        const currentUserId = await Spotify.getCurrentUserId();
+        const headers = { Authorization: `Bearer ${accessToken}` };
+        const url = `https://api.spotify.com/v1/users/${currentUserId}/playlists`;
+
+        try {
+            const response = await fetch( url, {headers: headers});
+            if(response.ok) {
+                const jsonResponse = await response.json();
+                if(!jsonResponse.items) {
+                    return [];
+                }
+                return jsonResponse.items.map(playlist=> ({
+                    id: playlist.id,
+                    name: playlist.name
+                }))
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    
 };
 
 

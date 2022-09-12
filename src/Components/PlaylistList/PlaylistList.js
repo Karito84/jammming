@@ -16,14 +16,15 @@ class PlaylistList extends React.Component {
     componentDidMount() {
         Spotify.getUserPlaylist().then(playlists => {this.setState({playlists: playlists})});
     }
-
-    componentDidUpdate() {
-        Spotify.getUserPlaylist().then(playlists => {this.setState({playlists: playlists})});
-    }
+    //this causes too many calls to spotify and eventually gets error 429
+    // componentDidUpdate() {
+    //     Spotify.getUserPlaylist().then(playlists => {this.setState({playlists: playlists})});
+    // }
     render() {
         return (
             <div className="PlaylistList">
                 <h3>My Spotify Playlists</h3>
+                
                 {this.state.playlists.map(playlist => {
                     return <PlaylistListItem playlistName={playlist.name} key={playlist.id} />
                 })

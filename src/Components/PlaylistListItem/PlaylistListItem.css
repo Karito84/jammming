@@ -1,4 +1,9 @@
 .ListItem-information {
 border-bottom: 1px solid #6f6f6f;
+padding: 0.5rem;
 }
 
+.ListItem-information:hover {
+    background-color: rgba(212, 153, 255, 0.6);
+    cursor: pointer;
+}

@@ -72,26 +72,59 @@ const Spotify = {
          }
 
     },
-      
-    async savePlaylist(name, tracksURIs) {
+      // it saves and updates playlist name and tracks in user's account
+    async savePlaylist(name, tracksURIs, id) {
         if((!name || !tracksURIs.length)) {
             return;
         }
+        
         const accessToken = Spotify.getAccessToken();
         const headers = { Authorization: `Bearer ${accessToken}` };
         let currentUserId = await Spotify.getCurrentUserId();
-        const url = `https://api.spotify.com/v1/users/${currentUserId}/playlists`
-        try {
-           
-            const response = await fetch(url, {
+        
+        if(id) {//checks if the playlist already exists ( if it does the id will be provided from selectPlaylist method in App.js), then it will update the playlist
+            
+            try {
+                const url = `https://api.spotify.com/v1/playlists/${id}`;
+                const response = await fetch(url, {
                 headers: headers,
-                method: 'POST',
+                method: 'PUT',
                 body: JSON.stringify({ name: name })
-            });
+                });
             if(response.ok) {
-                const jsonResponse = await response.json();
-                const playlistID = jsonResponse.id;
-                const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
+                try {
+                   const url = `https://api.spotify.com/v1/playlists/${id}/tracks`; 
+               
+                const response = await fetch(url, {
+                    headers: headers,
+                    method: 'PUT',
+                    body: JSON.stringify({ uris: tracksURIs})
+                    });
+                                
+                    if(response.ok) {
+                        const jsonResponse = await response.json();
+                        console.log(jsonResponse);
+                    }
+                    } catch (error) {
+                    console.log(error);                        }
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+        } else { // this part of the method is used when playlist didn't exist before and is being created for the first time
+            
+            const url = `https://api.spotify.com/v1/users/${currentUserId}/playlists`
+            try {
+                const response = await fetch(url, {
+                    headers: headers,
+                    method: 'POST',
+                    body: JSON.stringify({ name: name })
+                });
+                if(response.ok) {
+                    const jsonResponse = await response.json();
+                    const playlistID = jsonResponse.id;
+                    const url = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
 
                 try {
                     const response = await fetch(url, {
@@ -104,13 +137,14 @@ const Spotify = {
                         const jsonResponse = await response.json();
                         console.log(jsonResponse);
                     }
-                    } catch (error) {
+                } catch (error) {
                     console.log(error);
-                    }
-            } 
+                }
+                } 
             
-        } catch(error) {
+            } catch(error) {
             console.log(error);
+            }
         }
     },
 
@@ -134,8 +168,28 @@ const Spotify = {
         } catch (error) {
             console.log(error);
         }
-    }
+    },
 
+    //this retrieves the playlist with provided playlist id, then returns a promise that will resolve to retrieved tracks, and playlist name
+    async getPlaylist(id) {
+        const accessToken = Spotify.getAccessToken();
+        const headers = { Authorization: `Bearer ${accessToken}` };
+        const url = `https://api.spotify.com/v1/playlists/${id}`;
+        
+        try {
+            const response = await fetch(url, {headers: headers});
+            if(response.ok) {
+                const jsonResponse = await response.json();
+
+                if(!jsonResponse.tracks.items) {
+                    return [];
+                }
+                return jsonResponse;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     
 };
 

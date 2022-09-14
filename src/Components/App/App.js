@@ -14,13 +14,15 @@ class App extends React.Component {
     this.state = {
       searchResults:[],
       playlistName: 'My Playlist',
-      playlistTracks: []
+      playlistTracks: [],
+      playlistId: null
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+    this.selectPlaylist = this.selectPlaylist.bind(this);
   }
   componentDidMount() {
     Spotify.getAccessToken();
@@ -48,10 +50,11 @@ class App extends React.Component {
   savePlaylist() {
     let tracks = this.state.playlistTracks;
     let tracksURIs = tracks.map(currentTrack => currentTrack.uri);
-    Spotify.savePlaylist(this.state.playlistName , tracksURIs).then(() => {
+    Spotify.savePlaylist(this.state.playlistName , tracksURIs, this.state.playlistId).then(() => {
     this.setState({
       playlistName: "New Playlist Name",
-      playlistTracks: []
+      playlistTracks: [],
+      playlistId: null
     });
   })  
   }
@@ -59,6 +62,19 @@ class App extends React.Component {
   search(searchTerm) {  
     Spotify.search(searchTerm).then(searchResults => {
       this.setState({searchResults: searchResults})
+    })
+  }
+  // retrieves tracks and name of selected playlist, and updates state to the retrieved playlist
+  selectPlaylist(id) {
+    Spotify.getPlaylist(id).then(response => {
+      const playlistTracks = response.tracks.items.map(item => ({
+        id: item.track.id,
+        name: item.track.name,
+        artist: item.track.artists[0].name,
+        album: item.track.album.name,
+        uri: item.track.uri
+      }));
+      this.setState({ playlistId: id, playlistName: response.name, playlistTracks: playlistTracks })
     })
   }
 
@@ -75,7 +91,7 @@ class App extends React.Component {
                        onRemove={this.removeTrack}
                        onNameChange={this.updatePlaylistName}
                        onSave={this.savePlaylist}/>
-            <PlaylistList/>
+            <PlaylistList selectPlaylist={this.selectPlaylist}/>
           </div>
         </div>
       </div>)

@@ -1,5 +1,6 @@
 
 .PlaylistList {
+  box-sizing: border-box;
   width: 50%;
   max-height: 950px;
   overflow-y: scroll;

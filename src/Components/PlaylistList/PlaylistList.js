@@ -26,7 +26,7 @@ class PlaylistList extends React.Component {
                 <h3>My Spotify Playlists</h3>
                 
                 {this.state.playlists.map(playlist => {
-                    return <PlaylistListItem playlistName={playlist.name} key={playlist.id} />
+                    return <PlaylistListItem playlistName={playlist.name} key={playlist.id} id={playlist.id} selectPlaylist={this.props.selectPlaylist}/>
                 })
             }
             </div>

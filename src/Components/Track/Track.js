@@ -1,6 +1,7 @@
 import React from "react";
 import './Track.css';
 
+
 class Track extends React.Component {
     constructor(props) {
         super(props);
@@ -15,8 +16,6 @@ class Track extends React.Component {
         }else 
             return <button className="Track-action"
                             onClick={this.addTrack}>+</button>;
-
-
     }
 
     addTrack() {
@@ -27,6 +26,7 @@ class Track extends React.Component {
         this.props.onRemove(this.props.track);
     }
 
+  
     render() {
         
         return (
@@ -34,6 +34,8 @@ class Track extends React.Component {
                 <div className="Track-information">
                      <h3>{this.props.track.name}</h3> 
                      <p>{this.props.track.artist} | {this.props.track.album}</p>
+                     {this.props.preview && <audio controls src={this.props.preview}/>}
+                     {!this.props.preview && <p className="noPreview">No preview available</p>}
                 </div>
                 {this.renderAction()}
             </div>

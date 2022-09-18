@@ -1,5 +1,5 @@
 const clientId = "5c91c74a19d34338ba53fa27ccdcc754";
-const redirectUri = "http://karolina-jammming.surge.sh" ;
+const redirectUri = "http://localhost:3000/" ;
 
 let accessToken;
 let userId;
@@ -44,7 +44,8 @@ const Spotify = {
                 name: track.name,
                 artist: track.artists[0].name,
                 album: track.album.name,
-                uri: track.uri
+                uri: track.uri,
+                preview: track.preview_url
                 }));
             }
         } catch (error) {
@@ -170,7 +171,7 @@ const Spotify = {
         }
     },
 
-    //this retrieves the playlist with provided playlist id, then returns a promise that will resolve to retrieved tracks, and playlist name
+    // retrieves the playlist with provided playlist id, then returns a promise that will resolve to retrieved tracks, and playlist name
     async getPlaylist(id) {
         const accessToken = Spotify.getAccessToken();
         const headers = { Authorization: `Bearer ${accessToken}` };
@@ -192,8 +193,6 @@ const Spotify = {
     }
     
 };
-
-
 
 
 export default Spotify;
